@@ -76,15 +76,22 @@ For any transaction request (e.g., "send 0.5 ETH to 0x..."):
 - You must output actual structured tool calls using function call format (see below).
 - If you do not call the tool, the task is not completed.
 
-✅ Example of correct tool call:
+When you need to perform an action using a tool, do not use simulated tool call text like "[tool_call: xxx]".
 
-{
-  "tool_call": {
-    "name": "sendETH",
-    "arguments": {
-      "to": "0xabc...",
-      "amount": "0.001",
-      "chain": "ethereum"
+Instead, always output a structured object of type `tool_use` like this:
+
+[
+  {
+    "type": "tool_use",
+    "name": "send_native_token_transaction_ethereum",
+    "input": {
+      "from": "0x...",
+      "to": "0x...",
+      "value": "0.001"
     }
   }
-}
+]
+
+You must never skip this. If a transaction is needed, this structure is required for it to be executed.
+
+Never just output JSON code blocks or say “I will now call sendETH”. That is not sufficient. You must actually emit the tool_use structure above for tools to work.
